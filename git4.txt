@@ -1,0 +1,63 @@
+
+・ローカルbranchの作成
+まず、ローカルブランチ作成。ここではcourse_changeというbranchを作成している。
+git branch course_change
+
+あるいは
+ブランチの作成と新しいブランチへの切り替えを同時に行うには、git checkout コマンドに -b スイッチをつけて実行します。
+$ git checkout -b iss53  この時点ではまだbranchが切り替わる
+
+作ったbranchの確認。この時点ではまだbranchが切り替わっていない。
+git branch
+  course_change
+* master
+
+作ったbranchに作業場所を変更
+git checkout course_change
+Switched to branch 'course_change'
+
+作業場所が変わったかを再度確認
+git branch
+ * course_change
+  master
+
+
+作ったローカルブランチの内容をリモートブランチにpush
+この状態で何か作業をしてコミットした後、以下でリモートトラッキングブランチとしても管理できる
+git push origin course_change
+
+
+remoteにbranchができたことを確認
+git branch -r
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

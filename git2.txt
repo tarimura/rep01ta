@@ -1,0 +1,447 @@
+・The git init Command
+
+git init
+
+カレントディレクトリを Git リポジトリに変換します。
+このコマンドを実行するとカレントディレクトリに .git フォルダーが作成され、プロジェクトのバージョンの管理を開始することができます。
+
+git init <directory>
+
+指定したディレクトリに空の Git リポジトリを作成します。
+このコマンドを実行すると、.git サブディレクトリのみを含む <directory> という名称の新規フォルダーが作成されます。
+
+
+
+・The git clone Command
+
+git clone は、既存の Git リポジトリのコピーを作成するコマンドです。
+このコマンドは svn checkout と似ていますが、作業コピーがそれ自身で完全な Git リポジトリを構成する点が異なっていて、
+即ち作業コピーは自分自身の履歴を持ち、自分自身でファイルを管理し、元のリポジトリとは完全に独立した環境を提供します。
+
+利用者の便宜のため、クローンを行うと、元のリポジトリをポイントする origin という名称のリモート接続を自動的に作成します。
+これにより、極めて簡単に中央リポジトリとの通信を行うことができます。
+
+使用法
+
+git clone <repo>
+
+<repo> にあるリポジトリをローカルマシーンにクローンするコマンドです。
+元のリポジトリはローカルマシーンに存在しても、HTTP や SSH を用いてアクセスするリモートマシーンに存在しても構いません。
+
+git clone <repo> <directory>
+
+<repo> にあるリポジトリをローカルマシーン上の <directory> という名称のフォルダーにクローンするコマンドです。
+
+
+git clone ssh://john@example.com/path/to/my-project.git
+# Start working on the project
+
+次の例は、アドレスが example.com で、使用する SSH ユーザー名が john: である場合に、
+サーバーに格納された中央リポジトリの作業コピーを作成する方法を示したものです:
+
+最初の行は、新規の Git リポジトリをローカルマシーン上の my-project フォルダーに作成してそれを初期化し、
+それに中央リポジトリのコンテンツを取り込むコマンドです。
+これが完了すると、カレントディレクトリをプロジェクト内に移動して、編集、スナップショットのコミット、
+他のリポジトリとの通信などの作業を開始できるようになります。
+なお、クローンされたこのリポジトリには、.git という拡張子が付加されていないことに留意してください。
+これはローカルコピーがノンベアのステータスにあることを意味します。
+
+git clone https://github.com/tarimura/rep01ta.git sample
+
+
+
+補足説明
+SVNと比較した場合、git init は新規のバージョン管理プロジェクトを作成するための極めて簡便な手段を提供するコマンドです。
+Git では、手作業でのリポジトリ用フォルダの作成、ファイルのインポート、作業コピーのチェックアウトなどは不要です。
+プロジェクトフォルダーをカレントディレクトリにして git init を実行するだけで、
+完全な機能を有する Git リポジトリを作成することができます。
+ただし、ほとんどのプロジェクトにおいてgit init コマンドは中央リポジトリを作成する際に一度だけ使用するものであり、
+個々の開発者がローカルリポジトリ (中央リポジトリの作業コピー) を作成する際にはgit init は使用しません。
+開発者は通常、git clone コマンドを使用して既存リポジトリのコピーをローカルマシーン上に作成します
+
+
+
+・ローカルで普通に削除しちゃったファイルをGitHubに反映させる
+方法１
+git add -u
+git commit -m 'bar.txt削除をgitに反映'
+git push
+
+方法２
+git rm bar.txt  ←物理ファイルが無くてもエラーにならない
+git commit -m 'bar.txt削除をgitに反映'
+git push
+
+
+・git add -A と git add . と git add -u の違い
+
+結論から言えば、git add -A は git add . と git add -u を足したものです。
+git add . はワーキングツリーに新規作成された、もしくは変更されたファイルをaddします。
+つまり、rmコマンドなどで削除されたファイルはaddされません。
+git add -u は一つ前と最新のステージを比較して、変更があった部分のみをaddします。
+つまり、新しく作られたファイルはaddされません。
+最初にも述べたように、git add -A は git add . と git add -u を足したものですから、
+新規作成、修正、削除といった全てのファイルをaddします。
+
+
+ファイルを削除したいとき?
+$ git rm [削除したいファイル]
+
+ディレクトリごと逝きたいとき?
+$ git rm -r [削除したいディレクトリ]
+
+
+
+
+
+・リモートから特定のブランチを指定してcloneする方法
+
+git clone -b ブランチ名 https://リポジトリのアドレス
+
+リモートから特定のブランチを指定してcloneする方法
+
+git clone -b br01 https://github.com/tarimura/rep01ta.git
+
+
+git clone する時に HEAD 以外が欲しいことがある．
+その場合 git clone して，その後 git checkout (branch-name) としていた．
+そんなに手間でもないので，特に困ってはいなかった．
+
+git clone -b minimum_set https://github.com/niku/vagrant_config_files.git
+
+
+
+
+・git の add を取り消す
+git reset HEAD sample.txt
+
+git reset HEAD .
+
+
+
+
+【case1】 commit内容が間違っていた。取り消して再度commitしたい
+
+直前のcommitだけであれば、git commit --amendを使えば解決出来ます。
+
+    ファイルに修正を加えて、commit
+    間違っていた事に気づいたので、更に修正を加えた
+    git addしてgit commit --amend
+
+これでOKです。
+【case2】過去のcommitが誤っていた。commit自体を取り消したい
+
+よくあるようなパターン(私はやってしましますｗ)として、ローカルで作業してる時、
+何か修正を加えたが、それを誤って全てmasterブランチにcommitしていたとします。
+
+そこで、masterでのcommitをなかった事にして、bug_fixブランチでcommitしてた事にします。
+
+
+
+
+git commitをやり直しする＆取り消しする(「get commit --amend」と「git reset」)Add StarkadoppeKureduki_MaariEnnuimaZsandmarkkadoppeooooooooooooooooblp1526shinriyo
+
+git
+
+git commitを実行あとでコミットをやり直したり、コミット自体を取り消す方法です。
+直前にしたコミットをやり直す（git commit --amend）
+
+直前にしたコミットをやり直す場合、「git commit --amend」を使用します。
+
+例えば、直前のコミットログが以下のような状態だったとします。
+
+実は直前のコミットに含めるべきであった「hoge.txt」が含まれていませんでした。
+コミットログ(git commit --amend 実行前)
+
+$ git log
+commit cca638b48b4c8be7ad5432f7882497534b04e2b4
+Author: mrgoofy <hogehoge@example.com>
+Date:   Wed Sep 8 23:03:57 2010 +0900
+
+    2nd Commit.-> New Add File : bar.txt
+
+この直前のコミットに対して新たにファイルを追加してコミットをやり直すには、
+
+    いつも通り git add でファイルを追加
+    git commit --amend で直前のコミットをやり直す
+
+という流れになります。
+git add した後に git commit --amend
+
+$ git add hoge.txt
+$ git commit --amend -m "2nd Commit.-> New Add File : bar.txt & hoge.txt"
+[master 325e5d3] 2nd Commit.-> New Add File : bar.txt & hoge.txt
+ 2 files changed, 10 insertions(+), 0 deletions(-)
+ create mode 100755 bar.txt                                                                                                         
+ create mode 100755 hoge.txt
+
+git logを見てみると、コミットコメントも書き換わった形でコミットのやり直しが出来ています。
+
+ただ、よく見ると「commit」の部分のIDが前のコミットのモノとは違うものになっています。
+コミットログ(git commit --amend 実行後)
+
+$ git log
+commit 325e5d3f193d1e7ceb57d718a15c4b28360c1bf9
+Author: mrgoofy <hogehoge@example.com>
+Date:   Wed Sep 8 23:03:57 2010 +0900
+
+    2nd Commit.-> New Add File : bar.txt & hoge.txt
+
+「git commit --amend」を使用した場合、元のコミットを上書きするのではなく、元のコミットを無効にして、新たなコミットを作るという動作になります。
+
+
+    　　　------o (325e5d3f1) -> やり直したコミット
+    　　　/
+    　-----o-------o (cca638b48) -> 間違ったコミット ： コミット自体は残るが無効とされる
+
+コミット自体を取り消したい場合
+
+コミット自体を取り消しする(なかった事にする)には、「git reset」を使います。
+
+「git reset」には「git reset --soft」と「git reset --hard」の2種類があります。
+
+    「git reset --soft」 → ワークディレクトリの内容はそのままでコミットだけを取り消す。
+    「git reset --hard」 → コミット取り消した上でワークディレクトリの内容も書き換える。
+
+「git reset --soft」を使用する
+
+「git reset --soft」は、ワークディレクトリの内容はそのままでコミットだけを取り消したい場合に使用します。
+
+例えば、以下のような2件のコミットログのあるリポジトリに対して、「git reset --soft」をしてみます。
+
+ワークディレクトリには「bar.txt」と「foo.txt」の2ファイルが存在しています。
+コミットログ(git reset --soft 実行前)
+
+$ git log
+commit abf80570906a5b8a1db8efdb0041d774f782bf8f
+Author: mrgoofy <hogehoge@example.com>
+Date:   Wed Sep 8 23:05:54 2010 +0900
+
+    2nd Commit.-> New Add File : bar.txt
+
+commit a532d5a9ce88ddeaa0d521c13b05deb89b247bc2
+Author: mrgoofy <hogehoge@example.com>
+Date:   Wed Sep 8 23:05:23 2010 +0900
+
+    1st Commit.-> New Add File : foo.txt
+
+ワークディレクトリ(git reset --soft 実行前)
+
+$ ls -l
+total 2
+-rwxr-xr-x+ 1 goofy なし 16 2010-09-08 23:05 bar.txt
+-rwxr-xr-x+ 1 goofy なし 15 2010-09-08 23:05 foo.txt
+
+git reset --soft を実行
+
+「git reset --soft HEAD^」の「HEAD^」はひとつ前のコミットの意味になるので、ここでは直前のコミットである「abf8057090 2nd Commit.…」を取り消すことになります。
+
+$ git reset --soft HEAD^
+
+コミットログ(git reset --soft 実行後)
+
+コミットログから「abf805709 2nd Commit.…」が消えています。
+
+$ git log
+commit a532d5a9ce88ddeaa0d521c13b05deb89b247bc2
+Author: mrgoofy <hogehoge@example.com>
+Date:   Wed Sep 8 23:05:23 2010 +0900
+
+    1st Commit.-> New Add File : foo.txt
+
+ワークディレクトリ(git reset --soft 実行後)
+
+「bar.txt」と「foo.txt」の2ファイルが存在したままで、「git reset --soft」実行前の状態がそのまま保持されています。
+
+$ ls -l
+total 2
+-rwxr-xr-x+ 1 goofy なし 16 2010-09-08 23:05 bar.txt
+-rwxr-xr-x+ 1 goofy なし 15 2010-09-08 23:05 foo.txt
+
+「git reset --hard」を使用する
+
+「git reset --hard」は、コミット取り消した上でワークディレクトリの内容も書き換えたい場合に使用します。
+
+先程の「git reset --soft」で使用したディレクトリと同じ状態で試してみます。
+コミットログ(git reset --hard 実行前)
+
+$ git log
+commit abf80570906a5b8a1db8efdb0041d774f782bf8f
+Author: mrgoofy <hogehoge@example.com>
+Date:   Wed Sep 8 23:05:54 2010 +0900
+
+    2nd Commit.-> New Add File : bar.txt
+
+commit a532d5a9ce88ddeaa0d521c13b05deb89b247bc2
+Author: mrgoofy <hogehoge@example.com>
+Date:   Wed Sep 8 23:05:23 2010 +0900
+
+    1st Commit.-> New Add File : foo.txt
+
+ワークディレクトリ(git reset --hard 実行前)
+
+$ ls -l
+total 2
+-rwxr-xr-x+ 1 goofy なし 16 2010-09-08 23:05 bar.txt
+-rwxr-xr-x+ 1 goofy なし 15 2010-09-08 23:05 foo.txt
+
+git reset --hard を実行
+
+先程と同じく「HEAD^」で、直前のコミットの「abf8057090 2nd Commit.…」を取り消します。
+
+$ git reset --hard HEAD^
+HEAD is now at a532d5a 1st Commit.-> New Add File : foo.txt
+
+コミットログ(git reset --hard 実行後)
+
+「git reset --soft」の時と同様にコミットログから「abf805709 2nd Commit.…」が消えています。
+
+$ git log
+commit a532d5a9ce88ddeaa0d521c13b05deb89b247bc2
+Author: mrgoofy <hogehoge@example.com>
+Date:   Wed Sep 8 23:05:23 2010 +0900
+
+    1st Commit.-> New Add File : foo.txt
+
+ワークディレクトリ(git reset --hard 実行後)
+
+「bar.txt」が削除され「foo.txt」のみが存在している状態になっています。
+
+「git reset --hard」を実行した場合、ワークディレクトリについてもコミットを取り消した状態(今回の場合「a532d5a 1st Commit.…」)に戻されます。
+
+$ ls -l
+total 1
+-rwxr-xr-x+ 1 goofy なし 15 2010-09-08 23:05 foo.txt
+
+今回参考にしたページ
+
+Gitを使いこなすための20のコマンド - SourceForge.JP
+
+http://sourceforge.jp/magazine/09/03/16/0831212/3
+
+Gitの取消練習 - sinkin' in the rain
+
+http://tsukamoto.tumblr.com/post/267736584
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+HEAD
+
+HEADとは、現在使用しているブランチの先頭を表す名前です。
+デフォルトではmasterの先頭を表しています。
+HEADが移動することで、使用するブランチが変更されます。
+
+Note
+
+コミットを指定するときに、~(チルダ)と^(キャレット)を使ってあるコミットからの相対位置で指定することもできます。
+この時に、よく使われるのがHEADです。
+~(チルダ)を後ろに付け加えることで何世代前の親かを指定することができます。
+^(キャレット)は、ブランチのマージで親が複数ある場合に、何番目の親かを指定することができます。
+
+
+まず、HEADとは「今いるブランチの最新コミット」のことですね。
+つまり「git show HEAD」とすれば最新のコミット情報が見れることになります。
+
+なのでHEADを起点にすればわざわざハッシュを指定しなくてもコミットログを見ることができます。
+
+    ・一つ前のコミットをみたいとき
+    $ git show HEAD^
+    $ git show HEAD~
+
+    ・三つ前のコミットをみたいとき
+    $ git show HEAD^^^
+    $ git show HEAD~3
+    $ git show HEAD~~~
+    ※ $ git show HEAD^3は違う
+
+これらのコマンドは同じ結果を表します。ただし「HEAD^3」とすると意味が違ってくるので注意が必要です。
+
+
+以降はコミットが増えるたびに ^ 、~ の場合は数字が増えていきます。
+（何個も前のコミットの場合は直接ハッシュを指定したほうが簡単ですが……）
+
+（ちなみに、git log -pを使うと
+ハッシュ値やHEADの位置指定なしでもコミットの詳細を見ることができます。
+git log -pの場合そのブランチのコミットログがすべて出てくるので
+とりあえず一覧で詳細も見たいときはgit log -p、コミットひとつだけ見たい場合は
+git showと使い分けるといいと思います。）
+
+ 
+ちなみに、「今いるブランチの最新コミットだから、HEAD」ではなく
+HEADが今いるブランチを決めています。
+
+git checkout ブランチA を使うとHEADがブランチAの最新コミットに移動するので、
+今いるブランチが変わるわけです。
+HEADすごい。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
